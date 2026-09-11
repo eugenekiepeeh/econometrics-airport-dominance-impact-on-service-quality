@@ -1,31 +1,18 @@
----
-title: "Exploratory Analysis -- Summary Statistics and Visualizations"
-author: "Eugene Kiepeeh"
-output: github_document
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, dpi = 300, fig.width = 7, fig.height = 5)
-library(tidyverse)
-library(dplyr)
-library(ggplot2)
-library(kableExtra)
-library(lubridate)
-library(scales)
-library(patchwork)
-```
+Exploratory Analysis – Summary Statistics and Visualizations
+================
+Eugene Kiepeeh
 
 # Load Data
-```{r}
+
+``` r
 eda_data <- read_csv("../00_data/processed/model_data.csv")
 ```
 
 # Feature Engineering
+
 Add new variables for data analysis
 
-```{r}
+``` r
 eda_data <- eda_data |> 
   mutate(
     HHI_Tier = case_when(
@@ -52,60 +39,165 @@ eda_data <- eda_data |>
 
 # Summary Statistics
 
-```{r}
+``` r
 print("Summary of Respone Variable")
+```
+
+    ## [1] "Summary of Respone Variable"
+
+``` r
 eda_data |> select(depDelay_rate, arrDelay_rate, cancel_rate) |> summary()
+```
+
+    ##  depDelay_rate     arrDelay_rate      cancel_rate     
+    ##  Min.   :0.00000   Min.   :0.00000   Min.   :0.00000  
+    ##  1st Qu.:0.08602   1st Qu.:0.09211   1st Qu.:0.00000  
+    ##  Median :0.16129   Median :0.16667   Median :0.00000  
+    ##  Mean   :0.18766   Mean   :0.19206   Mean   :0.02648  
+    ##  3rd Qu.:0.25500   3rd Qu.:0.25862   3rd Qu.:0.02027  
+    ##  Max.   :1.00000   Max.   :1.00000   Max.   :1.00000
+
+``` r
 print("Summary of Explanatory Variables")
+```
+
+    ## [1] "Summary of Explanatory Variables"
+
+``` r
 eda_data |> select(HHI, carrierHubShare, carrierRouteShare) |> summary()
+```
+
+    ##       HHI         carrierHubShare     carrierRouteShare  
+    ##  Min.   :0.1378   Min.   :3.961e-05   Min.   :0.0007886  
+    ##  1st Qu.:0.4736   1st Qu.:8.344e-02   1st Qu.:0.2839506  
+    ##  Median :0.6570   Median :2.020e-01   Median :0.6521739  
+    ##  Mean   :0.7039   Mean   :2.778e-01   Mean   :0.6274789  
+    ##  3rd Qu.:1.0000   3rd Qu.:3.920e-01   3rd Qu.:1.0000000  
+    ##  Max.   :1.0000   Max.   :1.000e+00   Max.   :1.0000000
+
+``` r
 print("Summary of More Variables")
+```
+
+    ## [1] "Summary of More Variables"
+
+``` r
 eda_data |> select(carrierTotalFlights, route_total_flights, n_carriers) |> summary()
 ```
 
---- Correlations
-```{r}
+    ##  carrierTotalFlights route_total_flights   n_carriers    
+    ##  Min.   :  1.00      Min.   :   1.0      Min.   : 1.000  
+    ##  1st Qu.: 24.00      1st Qu.:  38.0      1st Qu.: 1.000  
+    ##  Median : 41.00      Median :  94.0      Median : 2.000  
+    ##  Mean   : 61.26      Mean   : 145.4      Mean   : 2.175  
+    ##  3rd Qu.: 86.00      3rd Qu.: 198.0      3rd Qu.: 3.000  
+    ##  Max.   :818.00      Max.   :1319.0      Max.   :11.000
+
+— Correlations
+
+``` r
 print("Correlations between response variable")
+```
+
+    ## [1] "Correlations between response variable"
+
+``` r
 eda_data |> select(depDelay_rate, arrDelay_rate, cancel_rate) |> cor()
+```
 
+    ##               depDelay_rate arrDelay_rate cancel_rate
+    ## depDelay_rate    1.00000000    0.83299056 -0.08712974
+    ## arrDelay_rate    0.83299056    1.00000000 -0.08876118
+    ## cancel_rate     -0.08712974   -0.08876118  1.00000000
+
+``` r
 print("Correlations between explanatory variable")
-eda_data |> select(HHI, carrierHubShare, carrierRouteShare) |> cor()
+```
 
+    ## [1] "Correlations between explanatory variable"
+
+``` r
+eda_data |> select(HHI, carrierHubShare, carrierRouteShare) |> cor()
+```
+
+    ##                         HHI carrierHubShare carrierRouteShare
+    ## HHI               1.0000000       0.3715317         0.8259836
+    ## carrierHubShare   0.3715317       1.0000000         0.4289581
+    ## carrierRouteShare 0.8259836       0.4289581         1.0000000
+
+``` r
 print("Correlations between more variable")
+```
+
+    ## [1] "Correlations between more variable"
+
+``` r
 eda_data |> select(carrierTotalFlights, route_total_flights, n_carriers) |> cor()
 ```
 
-```{r, include=FALSE}
-# Number of flights by airlines
-eda_data |>
-  group_by(Carrier, YEAR) |>
-  summarize(num_scheduled_flights = sum(carrierTotalFlights, na.rm = T),
-            mean_flights_bymonth = mean(carrierTotalFlights, na.rm = T),
-            mean_delay_rate = mean(depDelay_rate, na.rm = T),
-            mean_cancel_rate = mean(cancel_rate, na.rm = T),
-            .groups = "drop") |>
-  #pivot_wider(names_from = YEAR, values_from = num_scheduled_flights) |>
-  ggplot(aes(x = YEAR, y = num_scheduled_flights)) +
-  geom_point(aes(color = Carrier)) + geom_line(aes(color = Carrier)) +
-  theme_minimal() +
-  theme(legend.position = "bottom")
-```
+    ##                     carrierTotalFlights route_total_flights n_carriers
+    ## carrierTotalFlights           1.0000000           0.5402729  0.1551914
+    ## route_total_flights           0.5402729           1.0000000  0.7482184
+    ## n_carriers                    0.1551914           0.7482184  1.0000000
 
->To know the number of `Highly concentrated thin route` meaning routes dominated by one or few airlines with small number of flights per month, we should distinct by `year_month_id`, `route_hhi`, and `route_density` that way each rows are distinct.
+> To know the number of `Highly concentrated thin route` meaning routes
+> dominated by one or few airlines with small number of flights per
+> month, we should distinct by `year_month_id`, `route_hhi`, and
+> `route_density` that way each rows are distinct.
 
-```{r}
+``` r
 # Check the cross-tabulation: How many Monopolies are actually Dense?
 dist_eda_data <- eda_data |>
   distinct(route_id, YEAR_MONTH_id, HHI, HHI_Tier, Route_Density)
 
 print("Summary of Route Density")
-dist_eda_data |> select(Route_Density) |> summary()
+```
 
+    ## [1] "Summary of Route Density"
+
+``` r
+dist_eda_data |> select(Route_Density) |> summary()
+```
+
+    ##                     Route_Density   
+    ##  Thin Route (< 60/mo)      :196078  
+    ##  Moderate Route (60-180/mo):159188  
+    ##  Dense Route (> 180/mo)    : 63787
+
+``` r
 print("Summary of Route Density by Route Competition")
+```
+
+    ## [1] "Summary of Route Density by Route Competition"
+
+``` r
 table(dist_eda_data$HHI_Tier, dist_eda_data$Route_Density) |> proportions(round(2))
 ```
 
+    ##                                        
+    ##                                         Thin Route (< 60/mo)
+    ##   Highly Competitive (< 0.15)                   0.0000000000
+    ##   Moderately Concentrated (0.15 - 0.24)         0.0000000000
+    ##   Highly Concentrated (0.25 - 0.99)             0.0998480197
+    ##   Pure Monopoly (= 1.0)                         0.9001519803
+    ##                                        
+    ##                                         Moderate Route (60-180/mo)
+    ##   Highly Competitive (< 0.15)                         0.0000000000
+    ##   Moderately Concentrated (0.15 - 0.24)               0.0014259869
+    ##   Highly Concentrated (0.25 - 0.99)                   0.4824358620
+    ##   Pure Monopoly (= 1.0)                               0.5161381511
+    ##                                        
+    ##                                         Dense Route (> 180/mo)
+    ##   Highly Competitive (< 0.15)                     0.0004076066
+    ##   Moderately Concentrated (0.15 - 0.24)           0.0299120510
+    ##   Highly Concentrated (0.25 - 0.99)               0.8626992961
+    ##   Pure Monopoly (= 1.0)                           0.1069810463
+
 # Paper Tables
+
 These are plots that made the final paper
-```{r}
+
+``` r
 vars_to_summarize <- c("depDelay_rate","arrDelay_rate", "cancel_rate", "HHI", "carrierRouteShare","carrierHubShare", "carrierTotalFlights", "route_total_flights")
 
 # Compute the summary statistics
@@ -145,11 +237,13 @@ table1_formatted <- table1_data |>
     )
 
 kable(table1_formatted |> select(-`25th Pctl`, -`75th Pctl`, -N), align = "lcccccccc", caption = "Table 1: Summary Statistics of the Full Sample", format = "latex")
+```
 
+``` r
 write_csv(table1_formatted, "../04_output/tables/summary_stats.csv")
 ```
 
-```{r}
+``` r
 table2_data <- eda_data |>
   group_by(HHI_Tier) |>
   summarise(
@@ -175,12 +269,22 @@ table2_formatted <- table2_data |>
 
 # Print the table neatly 
 kable(table2_formatted, align = "lccccc", caption = "Table 2: Service Quality Performance by Market Concentration (HHI Tiers)")
+```
 
+| Market Concentration | Unique Routes | Mean Delay Rate | Mean Cancel Rate | Mean Carrier Route Share |
+|:---|:--:|:--:|:--:|:--:|
+| Highly Competitive (\< 0.15) | 4 | 20.46% | 1.47% | 10.24% |
+| Moderately Concentrated (0.15 - 0.24) | 138 | 18.17% | 1.61% | 16.84% |
+| Highly Concentrated (0.25 - 0.99) | 3,933 | 19.06% | 2.50% | 38.88% |
+| Pure Monopoly (= 1.0) | 8,035 | 18.37% | 2.91% | 100.00% |
+
+Table 2: Service Quality Performance by Market Concentration (HHI Tiers)
+
+``` r
 write_csv(table2_formatted, "../04_output/tables/hhi_tier_summarystats_general.csv")
 ```
 
-
-```{r}
+``` r
 hhi_tier_summarystats <- eda_data |>
   group_by(YEAR, HHI_Tier) |>
   summarise(
@@ -196,7 +300,7 @@ write_csv(hhi_tier_summarystats, "../04_output/tables/hhi_tier_summarystats.csv"
 
 # Paper Plots
 
-```{r}
+``` r
 theme_pub <- function() {
   theme_minimal(base_size = 12, base_family = "serif") +
     theme(
@@ -213,8 +317,7 @@ theme_pub <- function() {
 }
 ```
 
-
-```{r}
+``` r
 # -------------------------------------------------------------------------
 # Figure 1: The Macro View – Flight Disruptions Over Time (2020–2025)
 # -------------------------------------------------------------------------
@@ -251,7 +354,9 @@ fig1 <- ggplot(fig1_data,
 print(fig1)
 ```
 
-```{r}
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+``` r
 # -------------------------------------------------------------------------
 # Figure 2: The Core Question – Delays vs. Market Concentration
 # -------------------------------------------------------------------------
@@ -293,10 +398,17 @@ fig2_b <- ggplot(fig2_data, aes(x = HHI, y = arrDelay_rate, color = Dominance_Ti
   theme_pub()
 
 print(fig2_a)
+```
+
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
 print(fig2_b)
 ```
 
-```{r}
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
+
+``` r
 # -------------------------------------------------------------------------
 # Figure 3A: Distribution of Route HHI
 # -------------------------------------------------------------------------
@@ -325,7 +437,9 @@ fig3_a <- ggplot(fig3_data, aes(x = HHI)) +
 print(fig3_a)
 ```
 
-```{r}
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+``` r
 # -------------------------------------------------------------------------
 # Figure 3B: Distribution of Route HHI without Monopoly
 # -------------------------------------------------------------------------
@@ -355,7 +469,9 @@ fig3_b <- ggplot(fig3b_data, aes(x = HHI)) +
 print(fig3_b)
 ```
 
-```{r}
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+``` r
 # -------------------------------------------------------------------------
 # Figure 4: Distribution of Carrier Hub Share at Origin Airports
 # -------------------------------------------------------------------------
@@ -386,7 +502,9 @@ fig4 <- ggplot(fig4_data, aes(x = carrierHubShare)) +
 print(fig4)
 ```
 
-```{r}
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
 delay_color <- "#002C54" 
 cancel_color <- "#C5A059" 
 
@@ -427,9 +545,11 @@ final_plot <- (plt1 | plt2 | plt3) +
 print(final_plot)
 ```
 
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
 # save plots
 
-```{r}
+``` r
 # Save Figures
 ggsave("../04_output/figures/fig1_macro_view.pdf", plot = fig1, width = 8, height = 5, units = "in")
 
@@ -445,7 +565,8 @@ ggsave("../04_output/figures/fig6_delay_cancel_dist.pdf", plot = final_plot, wid
 ```
 
 # More Advanced EDA
-```{r}
+
+``` r
 # -------------------------------------------------------------------------
 # Track HHI and Delays Over Time for a Carrier-Route
 # -------------------------------------------------------------------------
@@ -486,7 +607,9 @@ fig_track <- ggplot(track_data, aes(x = Date, y = Value, color = Metric, group =
 print(fig_track)
 ```
 
-```{r}
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
+
+``` r
 # -------------------------------------------------------------------------
 # Market Evolution Trajectory 
 # -------------------------------------------------------------------------
@@ -527,3 +650,4 @@ fig_trajectory <- ggplot(trajectory_data, aes(x = mean_hhi, y = mean_delay_rate)
 print(fig_trajectory)
 ```
 
+![](02_exploratory_analysis_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
