@@ -1,0 +1,569 @@
+\documentclass[preprint,12pt,authoryear]{elsarticle}
+
+% --- Essential Packages ---
+\usepackage{placeins}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}   % Math formatting
+\usepackage{booktabs}           % Required for clean tables (fixest/modelsummary)
+\usepackage{graphicx}           % For figures
+\usepackage{setspace}           % For line spacing
+\usepackage{geometry}           % Margin adjustments
+\usepackage{rotating}
+\usepackage{siunitx} % For 'S' column type in tables
+\geometry{letterpaper, margin=1in}
+\usepackage{pdflscape} % For the landscape page
+\usepackage{float}     % For the [H] specifier
+\usepackage[colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue]{hyperref}
+\usepackage{longtable}
+\usepackage{hyperref}
+
+%\onehalfspacing
+%\renewcommand{\arraystretch}{1.15}
+%\setlength{\extrarowheight}{1.5pt}
+
+\begin{document}
+
+\begin{frontmatter}
+
+% --- Title and Author Information ---
+\title{\textbf{Does airport dominance weaken quality competition on concentrated airline routes?}\ 
+Evidence from delays and cancellations.}
+
+% Author 1
+\author[inst1]{Kiepeeh, J Eugene N\corref{cor1}}
+\ead{kiepeeheugene@gmail.com}
+
+% Author 2 (If applicable)
+% \author[inst2]{Co-Author Name}
+% \ead{coauthor@university.edu}
+\begin{abstract}
+    This paper examines whether airport dominance and route concentration systematically affect airline service quality, measured by departure delay rates, arrival delay rates, and flight cancellation rates. Using the Bureau of Transportation Statistics On-Time Performance dataset, I construct a 667,000-observation carrier-route-month panel spanning 391 U.S. airports and 8,734 directional routes over the period January 2020 through December 2025. I estimate high-dimensional fixed-effects OLS models with carrier, route, and year-month fixed effects, separately identifying the effects of route-level concentration — measured by the Herfindahl-Hirschman Index — and airport-level dominance — measured by a carrier's share of total departures from the origin airport. The results reveal an asymmetric quality response to market power across service dimensions. Higher route concentration is associated with lower departure and arrival delay rates, consistent with the congestion internalization hypothesis: dominant carriers bearing the full cost of self-induced delays have stronger incentives to schedule efficiently and buffer turnaround times. Airport-level hub dominance exerts the opposite effect, increasing delay rates by approximately 8–9 percentage points, reflecting the operational complexity inherent to hub-and-spoke coordination. Critically, these two forces partially offset one another — the hub penalty is significantly mitigated when a carrier simultaneously dominates both the route and the origin airport. For cancellations, the pattern diverges: individual carrier route share, rather than overall route concentration, is the primary predictor of cancellation propensity, consistent with dominant carriers exercising strategic discretion to withdraw service on routes where passengers face limited alternatives. These findings suggest that standard regulatory focus on fares and delay rates understates consumer harm in concentrated markets by omitting cancellation behavior as a distinct dimension of competitive discipline. The results contribute to the literature on hub premiums, quality competition under oligopoly, and the non-price effects of airline market consolidation.
+\end{abstract}
+
+\affiliation[inst1]{organization={Department of Economics, St. Olaf College}}
+% --- Keywords & JEL Codes ---
+\begin{keyword}
+Market Concentration \sep Airline Industry \sep Service Quality \sep Delays \sep Monopoly
+\end{keyword}
+
+\end{frontmatter}
+
+% Double spacing is often required for the review process
+\doublespacing 
+
+% ==========================================
+% 1. INTRODUCTION
+% ==========================================
+\section{Introduction}
+\label{sec:intro}
+In 1978, the U.S. passed the Airline Deregulation Act, removing federal control over commercial airline fares, routes and market entry, thereby dissolving the Civil Aeronautics Board which regulated aviation. At the time, they found the airfares of regulated airlines flying between states with fares of unregulated airlines flying within states was largely different and unregulated airlines charged far lower. Even economists supported this claim that breaking up the industry would create new airlines, increase competition, and lower fares. Fast forward to today, ADA has given airlines the leverage they hold today such as determining fares, and routes. 
+Many studies have found that the U.S. airline industry has converged in a marketplace where a single carrier often controls the majority of flights and infrastructure within “hub” airports. As a result, traditional academic research and regulatory scrutiny have focused on the “hub premium” —the tendency for dominant carriers to charge significantly higher fares to passengers traveling to or from their primary hubs. However, a critical question to explore is: how firm behavior toward customers shifts when they become the dominant option, specifically the quality of the service they offer. The airline industry serves customers with largely inelastic demand—consumers respond to price change at a smaller percentage than price change—and carriers recognize this and use this to maximize the consumers willingness to pay.  On one hand, airlines make large profits by charging customers significantly high prices through strategic methods, while offering minimal or average service. 
+
+When a potential passenger book their flight, they are considering several factors but the most prominent ones are the time of departure of the flight on their preferred date, arrival time and the likelihood of the flight getting canceled --- this depends on if the airline have a known history of delays. Hence, a consumer would consider an airline with the "greater service quality" to be the carrier to departs on time, arrives on time and have fewer cancellation. Often times, these carriers will be the carriers transporting the most passengers on a route --- the dominant carrier on a route --- or at least this is the best way to attract the most consumer in this market. Therefore, the empirical analysis conducted are based on these three (3) fundamental characteristics that consumers priorities when booking their flight. In fact, air travel is used because it saves time. This paper uses these three operational dimensions — departure delay rates, arrival delay rates, and cancellation rates — as its measures of service quality, asking whether the competitive pressure that normally disciplines carriers on these dimensions weakens when a carrier achieves dominance over a route or airport.
+	
+The paper aims to study this broad area of firms' behavior when they achieve default status, specifically whether the service quality of a carrier weakens or improves in highly concentrated versus competitive markets.  By investigating how firm behavior toward customers changes when an airline achieves a dominant market share, this study addresses whether these carriers leverage their status to minimize service investment. The findings offer vital implications for consumer protection regulations and the strategic management of competing airlines in the U.S. market.
+
+
+
+\section{Background}
+\label{sec:background}
+
+In October 2025, American Airline (AA) operated  63.9\% of the total flights out of LaGuardia Airport in New York, yet its operational metrics revealed significant challenges. During this period, AA achieved an on-time arrival rate of only 66.9\% and canceled 0.6\% of its flights—amounting to 1,115 cancellations. Furthermore, AA’s late-arriving aircraft rate stood at 8.5\%, leading alongside smaller carriers like Allegiant and Southwest, and its overall delay rate of 6.15\% exceeded that of its primary competitor, Delta (5.66\%). This is one example of the implications associated with an airline becoming the "default option" , its incentives to invest in service reliability may shift. In competitive markets, airlines use quality—measured by on-time performance and low cancellation rates—as a tool for vertical differentiation to attract passengers. In concentrated markets, however, the lack of viable alternatives may allow dominant carriers to deprioritize these operational investments. 
+
+
+The emergence of the hub-and-spoke system following the Airline Deregulation Act of 1978 created a landscape where specific airports are dominated by a single "network" carrier. While this system creates network benefits and opens new markets, it also introduces significant congestion externalities. Studies have shown that flights originating from an airline’s hub typically have on-time arrival rates 3.0 to 3.3 percentage points lower than non-hub flights, accompanied by an average of 1.2 to 1.4 minutes of extra delay (Montfort \& Berg, 2017). The relationship between market concentration and service quality remains a subject of intense debate in economic literature. One school of thought suggests that dominant airlines may actually have an incentive to "internalize" congestion (Calzada \& Fageda, 2023). Because a delay at a hub can cascade through an entire network, a dominant carrier operating most of the traffic at an airport might schedule flights more conservatively to avoid self-imposed delays (Santos \& Robin, 2009). Empirical evidence for this "internalization" is found primarily among network airlines at major hubs (Calzada \& Fageda, 2020, 2023).
+
+
+Conversely, other research suggests that the lack of competitive pressure in concentrated routes leads to worse performance. Competitive routes generally exhibit slightly higher on-time arrival percentages compared to monopolistic ones (Montfort \& Berg, 2017; Rupp \& Holmes, 2006). Furthermore, retrospective studies of airline mergers—which frequently increase airport-level dominance—have found that while mergers may improve coordination, they often lead to a quality decrease in markets where the merging firms previously competed (Chen \& Gayle, 2013). This suggests that as competitive pressure diminishes, the incentive to maintain high operational standards may also decline.
+In oligopolistic markets where prices often converge, service quality becomes the primary dimension of competition (Bubalo, 2022). Product quality in the airline industry is multidimensional, encompassing on-time performance, flight cancellations, mishandled baggage, and customer complaints (Ciliberto \& Schenone, 2010; Stamolampros \& Korfiatis, 2019). Flight frequency is also a critical quality component; travelers are more likely to choose an airline that offers frequent daily departures on a route (Brueckner \& Luo, 2014).
+However, the "default option" status of a dominant carrier may mute these competitive dynamics. Interestingly, consumer sensitivity to poor quality may even increase with dominance. Research indicates that the relationship between on-time performance deterioration and "consumer voice" (measured via social media complaints) is more than twice as strong when an airline operates more than 50\% of the flights in a market (Gans et al., 2017). This implies that while dominant carriers may have the market power to provide lower quality, they also face heightened reputational risks from a captive but dissatisfied customer base.
+
+
+Despite the rich literature on the "hub premium" and price effects, there is a lack of comprehensive evidence on how modern airport dominance specifically impacts the strategic decision to maintain operational integrity in terms of delays and cancellations. This paper fills that gap by analyzing whether the "default option" status leads to a systematic reduction in service quality investment, using recent data from the U.S. market to provide a contemporary perspective on airline behavior. Additionally, the paper account for route concentration a factor that may influence service quality. This paper also account for more recent years of study, 2020-2025 which most past papers have not studied.
+
+
+\section{Data and Methodology}
+\label{sec:methodology}
+
+\subsection{Data Sources and Sample Construction}
+The primary data source for this analysis is the Airline On-Time Performance dataset provided by the Bureau of Transportation Statistics (BTS). This monthly panel comprises mandatory reports from U.S. certified air carriers that account for at least one percent of domestic scheduled passenger revenues. The dataset provides flight-level granularity, capturing scheduled and actual departure and arrival times, delay metrics, and cancellations for all flights operated to or from reportable U.S. airports.
+
+I extract data for the 72-month period from January 2020 through December 2025. This timeframe captures a period of unprecedented structural volatility in the aviation industry: the severe exogenous demand shock induced by the COVID-19 pandemic (2020–2022) and the subsequent period of recovery (2023–2025). The raw dataset contains 40,910,273 individual flight records across 8,734 domestic routes connecting 391 airports.
+
+For my analyses, routes are treated as strictly directional. For example, Atlanta to Los Angeles (ATL-LAX) is classified as a distinct market from Los Angeles to Atlanta (LAX-ATL), capturing the unique operational and congestion constraints of the specific origin airport. The flight-level data is subsequently aggregated to the carrier-route-month level to facilitate structural panel estimation.
+
+\subsection{Variables Construction and Definition}
+
+To evaluate carrier service quality, I construct three key dependent variables at the carrier-route-month level: the departure delay rate (the proportion of a carrier's departure flights on a route delayed by more than 15 minutes), arrival delay rate (the proportion of a carrier's completed flights on a route delayed by more than 15 minutes)  and the cancellation rate (the proportion of a carrier's scheduled flights on a route that were cancelled). These are three metrics customers care about the most as a result they pay a higher fare to ensure the timely departure and arrival of the flights.
+
+
+To assess market structure and route competitiveness, I construct three primary independent variables. Crucially, all market structure metrics in this paper are calculated based on the Operating Carrier (the airline physically flying the aircraft and managing the crew) rather than the ticket-selling marketing carrier. This ensures our concentration metrics and findings representative of the airline flying passengers rather than their holding carrier.  . Due to the unavailability of granular seat capacity data for this sample period, market shares are calculated using scheduled flight frequencies. In the context of operational delays, flight frequency serves as a highly robust proxy for market power, as gate utilization and runway congestion are strictly functions of aircraft movements rather than passenger volume. Below are the key metrics used to assess dominance and competitiveness in this paper:
+\begin{itemize}
+    \item \textbf{Carrier Route Share}: The percentage of total flights on a specific directional route operated by a given airline in a specific month.
+    \item \textbf{Carrier Hub Share (Airport Dominance}: The percentage of total departures from a specific origin airport operated by a given airline.
+    \item \textbf{Route Herfindahl-Hirschman Index (HHI)}: To measure overall market concentration, we calculate the fractional HHI for each route-month. This is defined as the sum of the squared route market shares of all operating carriers. The index ranges from approaches 0 (perfect competition) to 1 (a pure monopoly). 
+\end{itemize}
+
+The table below shows the definition of variables and summary statistics.
+
+
+\FloatBarrier
+\begin{table}[!htbp] \centering 
+\small
+\caption{Variable Definitions and Summary Statistics} 
+\label{} 
+
+%\sisetup{
+  %table-format=3.3,
+  %group-separator={,}
+%}
+
+\begin{tabular}{p{3cm} p{7cm} S S} 
+\toprule
+Variable & Definition & {Mean} & {Std. Dev.} \\ 
+\midrule
+
+\multicolumn{4}{l}{\textbf{Airline Characteristics}} \\
+
+Codeshare 
+& Dummy = 1 if flight is a codeshare flight 
+& 0.315 & 0.464 \\ 
+
+Carrier Flights 
+& Total flights operated by the carrier on a route-month 
+& 61.258 & 59.317 \\ 
+
+\addlinespace
+\multicolumn{4}{l}{\textbf{Delay and Performance Measures}} \\
+
+Departure Delay Rate 
+& Fraction of flights departing late 
+& 0.188 & 0.148 \\ 
+
+Arrival Delay Rate 
+& Fraction of flights arriving late 
+& 0.192 & 0.148 \\ 
+
+On-Time Departure (\%) 
+& Fraction of flights departing on time 
+& 0.812 & 0.148 \\ 
+
+On-Time Arrival (\%) 
+& Fraction of flights arriving on time 
+& 0.808 & 0.148 \\ 
+
+Cancellation Rate 
+& Fraction of flights canceled 
+& 0.026 & 0.086 \\ 
+
+\addlinespace
+\multicolumn{4}{l}{\textbf{Route and Network Characteristics}} \\
+
+
+Std. Dev. Departure Time 
+& Standard deviation of scheduled departure times 
+& 320.952 & 200.289 \\ 
+
+
+Total Route Flights 
+& Total number of flights on the route 
+& 145.353 & 148.969 \\ 
+
+\addlinespace
+\multicolumn{4}{l}{\textbf{Market Structure}} \\
+
+HHI 
+& Herfindahl--Hirschman Index measuring route concentration 
+& 0.704 & 0.274 \\ 
+
+Carrier Route Share 
+& Carrier's share of total route traffic 
+& 0.627 & 0.360 \\ 
+
+Carrier Hub Share 
+& Carrier's share of operations at hub airports 
+& 0.276 & 0.237 \\ 
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Key Variables Summary Statistics of the Full Sample ($N = 667,836$)}
+\label{tab:summary_stats}
+\small % Slightly smaller font for better fit
+\resizebox{\textwidth}{!}{% Adjusts table to fit the slide width
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Variable} & \textbf{Mean} & \textbf{Std. Dev.} & \textbf{Min} & \textbf{Median} & \textbf{Max} \\
+\midrule
+\multicolumn{6}{l}{\textit{Operational Performance (Dependent Variables)}} \\
+Departure Delay Rate   & 0.188 & 0.148 & 0.000 & 0.161 & 1.000 \\
+Arrival Delay Rate     & 0.192 & 0.148 & 0.000 & 0.167 & 1.000 \\
+Cancellation Rate      & 0.026 & 0.086 & 0.000 & 0.000 & 1.000 \\
+\addlinespace
+\multicolumn{6}{l}{\textit{Market Structure \& Controls}} \\
+HHI (Concentration)    & 0.704 & 0.274 & 0.138 & 0.657 & 1.000 \\
+Carrier Route Share    & 0.627 & 0.360 & 0.001 & 0.652 & 1.000 \\
+Carrier Hub Share      & 0.278 & 0.256 & 0.000 & 0.202 & 1.000 \\
+Total Route Flights    & 145.4 & 149.0 & 1.0   & 94.0  & 1319.0 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\FloatBarrier
+
+\subsection{Model Construction}
+To estimate the impact of market concentration on airline service quality, I employ a high-dimensional fixed-effects Ordinary Least Squares (OLS) model. The core empirical specification takes the following form:
+
+\begin{equation}
+    Y_{irt} = \beta_1 HHI_{rt} + \beta_2 HubShare_{irt} + \beta_3 (HHI_{rt} \times HubShare_{irt}) + \gamma X_{irt} + \alpha_i + \delta_r + \tau_t + \epsilon_{irt}
+\end{equation}
+
+where $Y_{irt}$ represents the delay or cancellation rate for operating carrier $i$ on route $r$ in month-year $t$. $HHI_{rt}$ represents route concentration, $Share_{irt}$ is the carrier's route market share, and $X_{irt}$ represents a vector of operational controls.
+
+\vspace{0.5cm}
+
+
+I use strict fixed effects to control for unobserved heterogeneity. Carrier fixed effects ($\alpha_i$) control for the time-invariant company culture and the overarching operational strategies. Route fixed effects ($\delta_r$) account for underlying geographical and structural realities, such as distance, typical weather patterns, and chronic airspace congestion specific to a city-pair. Finally, year-month fixed effects ($\tau_t$) are included to account for macroeconomic shifts and seasonality. The inclusion of time fixed effects is particularly critical given our 2020–2025 sample window; rather than relying on a singular COVID-19 dummy variable, these fixed effects dynamically absorb the evolving pandemic-era demand shocks and government-mandated minimum service requirements.
+
+To prevent these extreme variances from biasing the structural coefficients, the model is estimated using a weighted least squares approach, where observations are weighted by the total number of flights the carrier completed in that month. This ensures that high-volume, economically significant operations appropriately anchor the estimates. Standard errors are clustered at the route level to account for serial correlation within markets over time. This way we address low-frequency routes to artificially skewing the estimates instead of arbitrarily trim or exclude small routes from the dataset. 
+
+\section{Descriptive Analysis}
+
+
+\begin{table}[htbp]
+   \centering
+   \caption{Service Quality Performance by Market Concentration (2020--2025)}
+   \label{tab:summary_by_year}
+   \resizebox{\textwidth}{!}{% Resizes to fit page width
+   \begin{tabular}{lcccccc}
+      \toprule
+      & \multicolumn{6}{c}{\textbf{Year}} \\
+      \cmidrule(lr){2-7}
+      \textbf{Market Concentration} & \textbf{2020} & \textbf{2021} & \textbf{2022} & \textbf{2023} & \textbf{2024} & \textbf{2025} \\
+      \midrule
+
+      \multicolumn{7}{l}{\textbf{Mean Departure Delay Rate}} \\
+      Highly Competitive & 0\% & 21.8\% & 15.5\% & 24.3\% & 0\% & 0\% \\
+      Moderately Concentrated & 8.6\% & 16.6\% & 19.1\% & 20.5\% & 20.9\% & 20.0\% \\
+      Highly Concentrated & 8.4\% & 17.5\% & 21.7\% & 21.2\% & 20.5\% & 21.7\% \\
+      Pure Monopoly & 9.0\% & 18.5\% & 22.0\% & 19.6\% & 19.6\% & 21.0\% \\
+      \addlinespace
+
+      \multicolumn{7}{l}{\textbf{Mean Cancellation Rate}} \\
+      Highly Competitive & 0\% & 1.4\% & 1.2\% & 2.7\% & 0\% & 0\% \\
+      Moderately Concentrated & 4.8\% & 1.3\% & 2.1\% & 1.0\% & 0.9\% & 0.8\% \\
+      Highly Concentrated & 7.6\% & 1.8\% & 2.8\% & 1.3\% & 1.5\% & 1.5\% \\
+      Pure Monopoly & 8.5\% & 2.3\% & 3.0\% & 1.1\% & 1.4\% & 1.3\% \\
+      \addlinespace
+    
+      
+      \bottomrule
+   \end{tabular}
+   }
+
+   \vspace{0.2cm}
+   \small{ \textbf{\textit{Note:}} Where there is 0\% is indicative of no "Highly Competitive Routes" existing in those years rather than 0\% Delay rates.}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    % If you put the file in a folder named 'figures', include the folder path:
+    \includegraphics[width=0.9\textwidth]{fig1_macro_view.pdf}
+    
+    \caption{This figure demonstrates the systemic shocks to the domestic aviation network, capturing the initial COVID-19 lockdown anomaly in Spring 2020 and the operational network meltdowns during the 2022 recovery period. \textit{Notes:} Data aggregated at the monthly level. Departure cancellation rate and arrival delay rate are expressed as percentages of total scheduled operations.}
+    \label{fig:macro_view}
+    
+    % Optional: Add a note below the figure for your reviewers
+    %\vspace{0.2cm}
+    %\small \textit{Notes:} Data aggregated at the monthly level. Departure cancellation rate and arrival delay rate are expressed as percentages of total scheduled operations.
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{fig2_core_mechanism.pdf}
+    \caption{Plot shows show Route level HHI changes correlates with Departure delay rate}
+    \vspace{0.2cm}
+    \label{fig:hhi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{fig2_core_mechanism2.pdf}
+    \caption{Plot shows show Route level HHI changes correlates with Arrival delay}
+    \vspace{0.2cm}
+    \label{fig:hhi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{fig3a_hhi_dist_monopoly.pdf}
+    \caption{Distribution showing market concentration across all air travel routes including monopolized and non-monopolized routes, 2020 - 2025}
+    \vspace{0.2cm}
+    \label{fig:hhi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{fig3b_hhi_dist_comp.pdf}
+    \caption{Distribution showing market concentration among non-monopoly air travel routes, 2020 - 2025}
+    \vspace{0.2cm}
+    \label{fig:hhi}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{fig6_delay_cancel_dist.pdf}
+    \caption{Distribution showing market concentration among non-monopoly air travel routes, 2020 - 2025}
+    \vspace{0.2cm}
+    \label{fig:hhi}
+\end{figure}
+
+
+
+\section{Empirical Analysis and Discussion}
+\label{sec:empirical}
+This section presents the core empirical findings of the paper across three dimensions of airline service quality: departure delay rates, arrival delay rates, and flight cancellation rates. For each outcome, I estimate a progressive series of five fixed-effects OLS specifications, sequentially introducing route concentration, carrier route share, airport hub dominance, and operational controls to isolate the independent contribution of each market structure variable. Taken together, the three sets of results reveal a consistent but asymmetric pattern — market concentration and hub dominance exert opposing effects on delay outcomes that partially offset one another, while cancellation behavior responds to a distinct set of market power dynamics that the delay models do not capture.
+
+ The following section will include discussion of  the model findings and implications in the air travel market
+
+\subsection{Departure Delay Rate}
+
+To isolate the drivers of departure delays on route by an airline in a month, I have estimated a series of fixed-effects ordinary least squares (OLS) regressions (Models 1–5). Our dependent variable is the percentage of flights delayed more than 15 minutes in month by a carrier on a route (\textbf{Departure Delay Rate}). Across all specifications, we employ a fixed-effects structure—incorporating Year-Month, Carrier, and Route fixed effects. This specification ensures that our coefficients are identified exclusively from within-variation over time, controlling for macroeconomic shocks, seasonal weather patterns, unobserved time-invariant carrier characteristics (such as corporate culture or baseline operational efficiency), and unobserved route-specific geographic or infrastructural constraints. Standard errors are clustered at the route level to account for arbitrary serial correlation and heteroskedasticity within routes over time. All models were tested for Multicollinearity using a baseline linear regression and ensure VIFs are less than 5.
+
+\FloatBarrier
+\begin{table}[htbp]
+   \caption{\label{tab:Reg1} Regression Results: Departure Delay Rate}
+   \centering
+   \begin{tabular}{lccccc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable: & \multicolumn{5}{c}{Departure Delay Rate}\\
+      Model:                            & (1)             & (2)             & (3)             & (4)             & (5)\\  
+      \midrule
+      \emph{Variables}\\
+      HHI                               & -0.0116$^{***}$ & -0.0206$^{***}$ & -0.0054$^{*}$   & 0.0133$^{***}$  & -0.0057$^{*}$\\   
+                                        & (0.0021)        & (0.0033)        & (0.0032)        & (0.0033)        & (0.0032)\\   
+      carrierRouteShare                 &                 & 0.0093$^{***}$  & -0.0120$^{***}$ & -0.0455$^{***}$ & -0.0131$^{***}$\\   
+                                        &                 & (0.0029)        & (0.0027)        & (0.0030)        & (0.0027)\\   
+      hubShare\_centered                &                 &                 & 0.0883$^{***}$  & 0.0903$^{***}$  & 0.0909$^{***}$\\   
+                                        &                 &                 & (0.0075)        & (0.0076)        & (0.0075)\\   
+      HHI $\times$ hubShare\_centered   &                 &                 & -0.0251$^{**}$  & -0.0302$^{***}$ & -0.0295$^{***}$\\   
+                                        &                 &                 & (0.0114)        & (0.0115)        & (0.0114)\\   
+      sd\_dep\_time                     &                 &                 &                 & 0.0058$^{***}$  &   \\   
+                                        &                 &                 &                 & (0.0001)        &   \\   
+      peak\_dep\_share                  &                 &                 &                 &                 & -0.0380$^{***}$\\   
+                                        &                 &                 &                 &                 & (0.0015)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      YEAR\_MONTH\_id                   & Yes             & Yes             & Yes             & Yes             & Yes\\  
+      Carrier                           & Yes             & Yes             & Yes             & Yes             & Yes\\  
+      route\_id                         & Yes             & Yes             & Yes             & Yes             & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                      & 667,440         & 667,440         & 667,440         & 655,816         & 665,392\\  
+      R$^2$                             & 0.47874         & 0.47884         & 0.48376         & 0.49268         & 0.48688\\  
+      Within R$^2$                      & 0.00020         & 0.00039         & 0.00982         & 0.02514         & 0.01604\\  
+      \midrule \midrule
+      \multicolumn{6}{l}{\emph{Clustered (route\_id) standard-errors in parentheses}}\\
+      \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+\end{table}
+\FloatBarrier
+
+We begin by examining the baseline relationship between market concentration and departure performance. In Model 1, the coefficient on the Herfindahl-Hirschman Index (HHI) is strictly negative and statistically significant ($p < 0.01$). This negative relationship holds robustly across all subsequent models except Model 4. This negative coefficient is evidence that highly concentrated routes --- routes with one or few carriers--- are expected to have less delays with any additional increase in a single or few carriers share. An explanation for fewer delays in highly concentrated markets could be that given a single carrier operates a large fraction of the flights, consequently, any delay they cause cascades primarily onto their own subsequent operations rather than those of competitors. Because the dominant carrier bears the full cost of these delays, they are incentivized to schedule more efficiently and pad turnaround times, resulting in a lower overall departure delay rate. In Model 2, we see a greater effect of route HHI in a month on monthly departure delay when the carrier share of total flights on a route in a month is accounted for. By accounting for \textit{CarrierRouteShare}, we see a statistically significant effect on late delays. Here, when an airline holds a large share of flights on a route, it results in increase delays by a small percentage point. For example, An airline with 10\% share of flights on a route, their delays are expected to increase by 0.098 percentage point. Compare to a monopolized routes where delays are expected to increase by 0.93 percentage points on a month to month basis. As shown in \autoref{fig:hhi}, there are more more monopoly routes in the U.S. air travel market than there are competitive market so this mostly the case on most routes. 
+
+Network structure, specifically whether a carrier operates a route out of one of its hubs, plays a massive role in departure reliability. Therefore, after accounting for the percentage of flights a departing an airport that the was operated by the carrier \textit{HubShareCentered} in Model 3, the main effect of \textit{HubShareCentered} is highly positive ($\beta = 0.0883$, $p < 0.01$). Hub operations are inherently complex, requiring the tight synchronization of inbound connecting flights, baggage transfers, and crew swaps. Consequently, flights originating from hubs experience a baseline departure delay rate that is roughly 8.83 percentage points higher than non-hub flights. In other words, for every additional increase the shares of outbound flights an airline holds from an airport, their delay is expected to increase by 0.088 percentage points, after accounting for the market concentration and airline market share of the route. The empirical results reveal a stark contrast between airport-level dominance and route-level scale. The highly significant, positive coefficient for hub share confirms a severe "hub penalty," demonstrating that the complex coordination required at fortress hubs inherently generates systemic friction, increasing departure delay rates by upwards of 9 percentage points. Conversely, a carrier’s dominance on a specific route yields a protective operational effect. As carriers increase their capacity share on a given corridor, departure delays reliably decrease. This divergence suggests that while hub-and-spoke networks achieve vital geographic connectivity, they create a centralized vulnerability. However, when an airline establishes sufficient scale on individual spokes, they can leverage localized efficiencies—such as dedicated gates, targeted staffing, and localized aircraft substitutions—to claw back some of that lost operational reliability.
+
+
+Perhaps the most critical finding regarding market structure is the negative interaction between route concentration (HHI) and hub dominance. In Model 3, we also found that $HHI \times HubShareCentered$ ($\beta = -0.0295$, $p < 0.05$). While hubs are universally prone to delays, when a carrier exercises monopoly-like control over the hub airport (high HHI), they can exert total control over airport infrastructure, gate utilization, and taxiway queuing. This dominance allows them to significantly mitigate the hub penalty, once again pointing to the efficiency gains of internalizing congestion at the airport level. Essentially, when a dominant hub carrier faces little competition on a route, they are better able to coordinate their own flights and alleviate self-induced congestion.  While operating at a heavily dominated hub guarantees baseline congestion, our model indicates that high market concentration on the connecting routes significantly buffers this penalty. This provides strong empirical support for the internalization theory of congestion. When a dominant carrier faces minimal competitive pressure on a route, it effectively "owns" both the airport infrastructure and the corridor's traffic. Without the need to aggressively schedule against rivals for prime slots, the monopolist can coordinate its own departures more efficiently, internalizing the cost of congestion and spacing out flights to protect the integrity of its broader network. Hub operations are inherently complex, requiring the tight synchronization of inbound connecting flights, baggage transfers, and crew swaps. Consequently, flights originating from hubs experience a baseline departure delay rate that is roughly 10.6 percentage points higher than non-hub flights. 
+
+In our analysis, we have found that market concentration does drives departure delays (\textit{Model 1}: $R^2 = 0.426$) however, after accounting for fixed effects namely: Year-Month, Route, Carrier, how market concentration ($HHI_{rt}$ and carrier market power ($Share_{irt}, HubShare_{irt}$) explains almost less than 1\% of the variation in departure delay (\textit{Within $R^2$} = $0.0098$ ), we introduce operational controls to aid with that. One common element of a dominant carrier is that they preserve the best traveling time --- peak departure time. 
+
+We include the standard deviation of departure times ($sd_dep_time$), scaled to represent hours. The coefficient is positive and significant ($\beta = 0.0058$, $p < 0.01$). A one-hour increase in the standard deviation of a carrier's scheduled departures on a route increases the departure delay rate by roughly 0.59 percentage points. Highly dispersed, erratic schedules prevent carriers from efficiently utilizing ground crews and gates, whereas tightly clustered or highly regular schedules improve operational rhythm. Accounting for the variation in an airline departure time resulted in greater \textit{Within $R^2$} compare the percentage of flights on a route that an airline operated during peak departure time. Interestingly, a higher concentration of a route's flights during peak hours is associated with a 3.80 percentage point decrease in the departure delay rate. This counterintuitive finding likely points to strategic operational prioritization: airlines either pad the schedules of peak flights more heavily or allocate their best ground resources to these flights to prevent massive, network-wide cascading delays.
+
+
+
+
+\subsection{Arrival Delay Rate}
+
+As we explore whether airlines perform worse (or better) when they face less competition and if their hub dominance impacts their service quality, we treated the percentage of flights a carrier completed on a flight in a month arriving 15 minutes later than scheduled arrival time (\textbf{Arrival Delay Rate}) as a dependent variable. \autoref{tab:Reg2} shows the Fixed Effects OLS Regression results.  
+
+\FloatBarrier
+\begin{table}[htbp]
+   \caption{\label{tab:Reg2} Regression Results: Arrival Delay Rate}
+   \centering
+   \begin{tabular}{lccccc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable: & \multicolumn{5}{c}{Arrival Delay Rate}\\
+      Model:                            & (1)             & (2)             & (3)             & (4)             & (5)\\  
+      \midrule
+      \emph{Variables}\\
+      HHI                               & -0.0181$^{***}$ & -0.0167$^{***}$ & -0.0227$^{***}$ & -0.0028         & 0.0143$^{***}$\\   
+                                        & (0.0022)        & (0.0032)        & (0.0022)        & (0.0030)        & (0.0031)\\   
+      carrierRouteShare                 &                 & -0.0014         &                 & -0.0227$^{***}$ & -0.0521$^{***}$\\   
+                                        &                 & (0.0026)        &                 & (0.0024)        & (0.0026)\\   
+      hubShare\_centered                &                 &                 & 0.0756$^{***}$  & 0.0814$^{***}$  & 0.0814$^{***}$\\   
+                                        &                 &                 & (0.0067)        & (0.0067)        & (0.0068)\\   
+      HHI $\times$ hubShare\_centered   &                 &                 & -0.0219$^{**}$  & -0.0183$^{*}$   & -0.0198$^{*}$\\   
+                                        &                 &                 & (0.0104)        & (0.0104)        & (0.0106)\\   
+      peak\_dep\_share                  &                 &                 &                 & -0.0258$^{***}$ &   \\   
+                                        &                 &                 &                 & (0.0014)        &   \\   
+      sd\_dep\_time                     &                 &                 &                 &                 & 0.0052$^{***}$\\   
+                                        &                 &                 &                 &                 & (0.0001)\\   
+      \midrule
+      \emph{Fixed-effects}\\
+      YEAR\_MONTH\_id                   & Yes             & Yes             & Yes             & Yes             & Yes\\  
+      Carrier                           & Yes             & Yes             & Yes             & Yes             & Yes\\  
+      route\_id                         & Yes             & Yes             & Yes             & Yes             & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations                      & 667,440         & 667,440         & 667,440         & 665,392         & 655,816\\  
+      R$^2$                             & 0.42609         & 0.42610         & 0.43018         & 0.43206         & 0.43813\\  
+      Within R$^2$                      & 0.00046         & 0.00046         & 0.00757         & 0.01114         & 0.02000\\  
+      \midrule \midrule
+      \multicolumn{6}{l}{\emph{Clustered (route\_id) standard-errors in parentheses}}\\
+      \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+\end{table}
+\FloatBarrier
+
+\FloatBarrier
+
+
+
+We find that in Model 1, HHI is among the strongest predictors of Arrival Delay Rate (p < 0.001). We see for every additional 10\% increase in market concentration on a route,  the number of flights to be delayed is expected to decrease by 0.181 percentage points on a monthly basis. With this result, it is evident when route dominance result in good service quality. We find that after accounting for the route’s overall concentration (HHI), an increase in a carrier's individual route share has a decreasing effect on arrival delays($\beta=-0.0014$,$p>0.1)$ despite a its low statistical significance. One reason for this is a carrier with a high share of flights on a route often has dedicated resources at the destination airport (e.g., more gates, more ground handlers, and stand-by crews). If a flight is running late, the carrier can re-allocate its own resources to "catch up," whereas a carrier with only one flight a day has no such flexibility. Compare to \textit{Departure Delay Rate} Model 2, we saw a positive effect on departure delays. 
+
+Consistent with the impact we saw for airport dominance observed in departure delay rate, $HubShareCentered$ remains a dominant and positive predictor of arrival delays across all models ($\beta_{HubShareCentered} = 0.0814, p < 0.01$ in Model 4). This indicates that carriers operating out of their primary hubs face a baseline arrival delay rate roughly 8.14 percentage points higher than on non-hub routes. However, on highly concentrated route, the impact of airport dominance at the origin airport on poor on-time arrivals rate diminishes when a dominate hub carrier operates a flight on highly concentrated route. While airport dominance generally erodes quality, this negative interaction suggests that the impact is mitigated when the route itself is concentrated. A reason for this is a dominant hub carrier on a highly concentrated route will mostly have assigned gates at the destination airport---for example, Delta, American Airlines. Additionally, a dominant hub carrier, facing limited competition on a spoke, can better coordinate its own landing slots and taxiway usage to alleviate self-induced congestion. A few reasons for this is, a carrier that holds a large share of departing airports can easily reduce departures to achieve early or on-time arrival by changing the departure gate of passengers to the gate with available aircraft and later departure time than their current flight needing departure. This saves passengers time and airlines typically do this often more than 15 minutes before takeoff so it makes sense why their delay is reduced greatly when they hold a large share of departure airport flights on a concentrated route. A reason for the decreased effect when HHI interacted with hub share speaks to the competitive nature of firms even in a market of fewer sellers and many buyers, they are still trying to out compete their competitor firm to attract the most customers. In a market where customers have fewer options to buy, especially a market of customers with inelastic demand, it is profitable to provide a 5\% better service than rival firms. What this does is in the eyes of customers, Carrier A saves 5\% of my time compared to Carrier B on average.
+
+We also found that the percentage of flights a carrier operate on a route have greater impact on their expected late arrivals in the month. Similar to departure delay, the motivation to ensure on-time departure and arrivals during peak hours is very important for airlines because during these periods are when passengers truly validated a carrier service---passenger are trying to get to destination quickly as result they are traveling during peak hours. Overall, by modeling how competition and airport dominance affects the arrival of flights, we found convincing evidence that competition explains about 43.84\% (\textit{ $R^2$ value}) of what drives delay in arrivals. In fact, depending on how concentrated or competitive  a trip from ATL to LAX is using HHI, we can estimate about 42\% of the true expected percentage of flights to be delayed upon arrival depending irrespective of the airline operating the trip. After accounting for the year, month, carrier, route, our final model (Model 5) explains 2\% (Within $R^2$) of the variation in arrival delays.
+
+
+\subsection{Empirical Analysis: Flight Cancellation Rate}
+
+While the previous sections suggest that market concentration may offer operational efficiencies in managing delays, I now shift focus to an extreme form of service quality failure: flight cancellations. This metric represents a total withdrawal of the scheduled flights in a month. \autoref{tab:Reg3} presents the estimation results for the cancellation rate across five specifications (Models 1–5). Unlike the results for arrival and departure delays, market structure appears to exert a different pressure on the propensity to cancel.
+
+\FloatBarrier
+\begin{table}[htbp]
+   \caption{\label{tab:Reg3} Regression Results: Cancellation Delay Rate}
+   \centering
+   \begin{tabular}{lccccc}
+      \tabularnewline \midrule \midrule
+      Dependent Variable: & \multicolumn{5}{c}{Cancellation Rate}\\
+      Model:              & (1)                   & (2)                   & (3)                   & (4)             & (5)\\  
+      \midrule
+      \emph{Variables}\\
+      HHI                 & 0.0012$^{*}$          & -0.0007               & -0.0003               & -0.0016$^{**}$  & -0.0005\\   
+                          & (0.0006)              & (0.0007)              & (0.0008)              & (0.0007)        & (0.0008)\\   
+      carrierRouteShare   &                       & 0.0020$^{***}$        & 0.0014$^{***}$        & 0.0024$^{***}$  & 0.0005\\   
+                          &                       & (0.0005)              & (0.0005)              & (0.0005)        & (0.0006)\\   
+      hubShare\_centered  &                       &                       & 0.0021$^{***}$        & 0.0023$^{***}$  & 0.0021$^{***}$\\   
+                          &                       &                       & (0.0007)              & (0.0007)        & (0.0007)\\   
+      peak\_dep\_share    &                       &                       &                       & -0.0042$^{***}$ &   \\   
+                          &                       &                       &                       & (0.0003)        &   \\   
+      sd\_dep\_time       &                       &                       &                       &                 & 0.0004$^{***}$\\   
+                          &                       &                       &                       &                 & ($3.24\times 10^{-5}$)\\    
+      \midrule
+      \emph{Fixed-effects}\\
+      YEAR\_MONTH\_id     & Yes                   & Yes                   & Yes                   & Yes             & Yes\\  
+      Carrier             & Yes                   & Yes                   & Yes                   & Yes             & Yes\\  
+      route\_id           & Yes                   & Yes                   & Yes                   & Yes             & Yes\\  
+      \midrule
+      \emph{Fit statistics}\\
+      Observations        & 667,440               & 667,440               & 667,440               & 665,392         & 655,816\\  
+      R$^2$               & 0.58959               & 0.58961               & 0.58963               & 0.59599         & 0.59773\\  
+      Within R$^2$        & $1.09\times 10^{-5}$  & $5.29\times 10^{-5}$  & $8.94\times 10^{-5}$  & 0.00058         & 0.00064\\  
+      \midrule \midrule
+      \multicolumn{6}{l}{\emph{Clustered (route\_id) standard-errors in parentheses}}\\
+      \multicolumn{6}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+   \end{tabular}
+\end{table}
+
+
+Model 1 establishes the baseline relationship, where the coefficient on $HHI$ is positive and marginally significant ($p < 0.1$). This marks the first instance in the study where market concentration appears to erode service quality rather than improve it. However, as I introduce the carrier’s specific market power in Model 2, the $carrierRouteShare$ becomes the primary driver of cancellations ($\beta = 0.0020, p < 0.01$), while the general $HHI$ becomes insignificant. This shift suggests that the degradation of service quality is not merely a function of route concentration, but rather the specific market power held by a dominant firm. In an Industrial Organization framework, this indicates that dominant carriers may engage in ``strategic consolidation.'' When a carrier holds a high share of a captive market, it can argue that the reputational and financial cost for cancelling a flight diminishes, allowing the firm to prioritize cost-saving load consolidation over the maintenance of schedule integrity.
+
+The ``hub penalty'' observed in delay performance extends significantly to cancellations. Models 3 through 5 introduce $hubShare\_centered$, which remains positive and statistically significant across all specifications ($\beta = 0.0021, p < 0.05$ in 5). This result confirms that airport-level dominance exacerbates operational fragility. Dominant hub carriers manage highly complex, interconnected networks where a single disruption can trigger a cascade of failures. In this environment, carriers appear more likely to cancel flights to prevent network-wide contagion. Interestingly, Model h4 shows that a higher $peak\_dep\_share$ is associated with a decrease in cancellations ($\beta = -0.0042, p < 0.01$), suggesting that carriers strategically protect high-revenue, high-visibility peak flights while passing the burden of cancellations to off-peak periods.
+
+
+Finally, Model 5 incorporates schedule volatility through the $sd\_dep\_time$ variable, which exhibits a positive and highly significant effect ($\beta = 0.0004, p < 0.01$). This indicates that erratic or highly dispersed schedules increase the probability of cancellation, as they prevent the efficient utilization of ground crews and backup aircraft. Across all specifications, the models maintain a high overall $R^2$ of approximately 0.59, though the extremely low ``Within $R^2$'' values indicate that while fixed effects capture the structural levels of cancellations, market power variables explain the critical strategic shifts in how carriers exercise their discretion to cancel.
+
+\section{Conclusion: Implications of Dominance on Service Quality}
+Across 667,000 carrier-route-month observations spanning 2020–2025, three empirical patterns emerge consistently. First, higher route concentration — measured by the Herfindahl-Hirschman Index — is associated with lower departure and arrival delay rates, a result that holds across multiple specifications after controlling for carrier, route, and year-month fixed effects. Second, airport-level hub dominance exerts the opposite effect, increasing both departure and arrival delay rates by approximately 8–9 percentage points relative to non-hub operations — a hub penalty that reflects the operational complexity of coordinating connecting flights, crew swaps, and baggage transfers at fortress hub airports. Third, the interaction of route concentration and hub dominance is negative and significant, indicating that when a carrier exercises dominant control over both a route and its origin airport simultaneously, the hub penalty is partially mitigated. For cancellations, the pattern diverges: route concentration itself is not a robust predictor, but a carrier's individual route share is positively associated with cancellation rates across specifications, while hub share independently increases cancellation propensity.
+
+The divergence between the delay and cancellation results is not incidental — it suggests a strategic asymmetry in how dominant carriers manage service quality failure. Delays at hub airports are a systemic and visible operational cost that dominant carriers have both the incentive and the infrastructure to mitigate, consistent with the congestion internalization hypothesis established in prior literature. Cancellations, by contrast, appear to function differently: on routes where a carrier holds a captive market share, the competitive cost of withdrawing service is lower, and the data are consistent with carriers exercising discretion to cancel off-peak or low-load flights for cost optimization. In competitive markets, a cancellation risks losing a passenger to a rival permanently; in concentrated markets, that disciplining threat is diminished.
+
+To the extent these correlational findings reflect genuine behavioral responses to competitive pressure, they carry a direct implication for how regulators evaluate airline market concentration. Current antitrust and consumer protection frameworks in the U.S. aviation sector focus primarily on fare levels and, secondarily, on delay rates. The cancellation results suggest this focus is incomplete — cancellation propensity is a distinct dimension of consumer harm that responds to market power in ways that delay rates do not capture, and one that is less visible to passengers at the time of booking. Policymakers evaluating airline mergers or hub dominance should consider incorporating systematic cancellation analysis alongside traditional price and delay metrics as a component of competitive effects assessment.
+
+\section{Limitations and directions for future work}
+Several important caveats condition these findings. The fixed-effects strategy controls for time-invariant heterogeneity across carriers and routes but does not resolve the potential endogeneity of market structure — carriers may accumulate route share partly because of operational characteristics that also affect delay and cancellation outcomes. Future work should exploit quasi-experimental shocks to market concentration, such as low-cost carrier entry events or the exit of carriers through bankruptcy, to establish cleaner causal identification. Additionally, the 2020–2022 period introduced government-mandated minimum service requirements that partially decoupled route operations from normal competitive incentives; subsample analysis isolating the post-recovery period is a natural robustness check. Market shares constructed from flight frequency rather than seat capacity represent a further measurement limitation, particularly for the cancellation analysis where passenger-level demand conditions are more directly relevant.
+
+
+\newpage
+\begin{thebibliography}{99}
+
+\bibitem{Brueckner2014} 
+Brueckner, J. K., \& Luo, D. (2014). 
+\textit{Measuring strategic firm interaction in product-quality choices: The case of airline flight frequency}.
+
+\bibitem{Bubalo2021} 
+Bubalo, B. (2021). 
+\textit{Airport Capacity and Performance in Europe - A study of transport economics, service quality and sustainability}.
+
+\bibitem{Bubalo2022} 
+Bubalo, B. (2022). 
+\textit{Airport Capacity and Performance in Europe -- A study of transport economics, service quality and sustainability}.
+
+\bibitem{Calzada2020} 
+Calzada, J., \& Fageda, X. (2020). 
+\textit{Airport Dominance, Route Network Design and Flight Delays}.
+
+\bibitem{Calzada2023} 
+Calzada, J., \& Fageda, X. (2023). 
+\textit{Airport dominance, route network design and flight delays}.
+
+\bibitem{Chen2013} 
+Chen, Y., \& Gayle, P. G. (2013). 
+\textit{Mergers and Product Quality: Evidence from the Airline Industry}.
+
+\bibitem{Ciliberto2010} 
+Ciliberto, F., \& Schenone, C. (2010). 
+\textit{Are the Bankrupt Skies the Friendliest?}
+
+\bibitem{Diana2016} 
+Diana, T. (2016). 
+\textit{Has market concentration fostered on-time performance? A case study of seventy-two U.S. airports}.
+
+\bibitem{Gans2017} 
+Gans, J. S., Goldfarb, A., \& Lederman, M. (2017). 
+\textit{Exit, Tweets and Loyalty}.
+
+\bibitem{Rupp2006} 
+Rupp, N. G., \& Holmes, G. M. (2006). 
+\textit{An Investigation into the Determinants of Flight Cancellations}.
+
+\bibitem{Santos2009} 
+Santos, G., \& Robin, M. (2009). 
+\textit{Determinants of delays at European airports}.
+
+\bibitem{Stamolampros2019} 
+Stamolampros, P., \& Korfiatis, N. (2019). 
+\textit{Airline service quality and economic factors: An ARDL approach on US airlines}.
+
+\bibitem{Montfort2017} 
+van Montfort, J. A. G. F., \& van den Berg, V. A. C. (2017). 
+\textit{The Total Size of an Airline and the Quality of its Flights}.
+
+\end{thebibliography}
+
+
+\clearpage
+\appendix
+\label{sec:appendix}
+
+%\section{Additional Tables and Figures}
+%\label{sec:appendixA}
+
+\end{document}
