@@ -1,0 +1,80 @@
+---
+title: 'Data Preparation: Defining Key Variables'
+author: "Eugene Kiepeeh"
+date: "2026-09-02"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+```
+
+
+```{r}
+airline_route_level_df <- read_csv("00_data/processed/airline_route_level_data.csv")
+```
+
+# Calculating HHI
+
+HHI is calculated as an airline total number of trips completed/assigned on a route out of the total number of trips made by all airlines on that route.
+
+```{r Calculate HHI}
+hhi_final <- airline_route_level_df |>
+  group_by(YEAR, MONTH, ORIGIN, DEST) |>
+  summarize(
+    HHI = sum((100*airlineRouteShare)^2),
+    n_carriers = n(), .groups = "drop")
+
+airline_route_level_df <- airline_route_level_df |>
+  left_join(hhi_final, by = c("YEAR","MONTH","ORIGIN","DEST"))
+```
+
+
+# Modifying Variables Name
+
+```{r}
+airline_route_level_df <- airline_route_level_df |>
+    select(-file_id) |>
+  arrange(YEAR, MONTH, BRANDED_CODE_SHARE) |>
+  # create identification key
+  mutate(
+    route_id = paste(ORIGIN, DEST, sep = "_"),
+    carrier_route_id = paste(BRANDED_CODE_SHARE, ORIGIN, DEST, sep = "_"),
+    YEAR_MONTH_id = paste(YEAR, MONTH, sep = "_")) |>
+    relocate(c(YEAR_MONTH_id, route_id, carrier_route_id), .after = MONTH)
+```
+
+
+```{r}
+airline_route_level_df <- airline_route_level_df |>
+  # rescaled route HHI for interpretation purposes
+  mutate(HHI = HHI/10000) |>
+  # rename variables for interpretation purposes
+  rename(Carrier = BRANDED_CODE_SHARE, 
+         carrierTotalFlights = totalFlights,
+         carrierRouteShare = airlineRouteShare,
+         carrierHubShare = hubShare_Month) |>
+  # select important variables for modelling
+  select(YEAR, MONTH, Carrier, ORIGIN, DEST,
+         # airline and route specific flights count
+         carrierTotalFlights, route_total_flights, n_carriers,
+         # market competitiveness/concentration metrics
+         HHI, carrierHubShare, carrierRouteShare,
+         # response variables
+         depDelay_rate, arrDelay_rate, cancel_rate, 
+         # co-variate
+         sd_dep_time, peak_dep_Count, peak_dep_share,
+         # identification key
+         YEAR_MONTH_id, route_id, carrier_route_id)
+```
+
+```{r}
+write_csv(airline_route_level_df, "00_data/processed/model_data.csv")
+sample_airline_route_level_df <- slice_sample(airline_route_level_df, n = 400)
+write_csv(sample_airline_route_level_df, "00_data/processed/sample_model_data.csv")
+```
+

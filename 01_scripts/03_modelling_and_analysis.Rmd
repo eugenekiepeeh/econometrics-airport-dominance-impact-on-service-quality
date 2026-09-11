@@ -1,0 +1,183 @@
+---
+title: 'Modelling: Delay ~ Market Competitive'
+author: "Eugene Kiepeeh"
+date: "2026-09-02"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(dplyr)
+library(fixest)
+library(lmtest)
+library(car)
+library(sandwich)
+```
+
+# Load Clean Data
+
+```{r}
+routeModel_df <- read_csv("00_data/processed/model_data.csv")
+```
+
+# Centering Variables
+
+```{r}
+routeModel_df <- routeModel_df |>
+  group_by(YEAR, MONTH, route_id) |>
+  mutate(carrierrouteshare_scaled= as.numeric(scale(carrierRouteShare))) |>
+  ungroup() |>
+  group_by(Carrier, ORIGIN, YEAR, MONTH)  |>
+  mutate(carrierHubShare_scaled= as.numeric(scale(carrierHubShare))) |>
+  ungroup()
+```
+
+
+```{r}
+#Checking for Reverse-Causality
+
+grangertest(routeModel_df$depDelay_rate, routeModel_df$HHI, order = 3)
+
+str(routeModel_df)
+```
+
+
+# ----------------- Model 1: Departure Delay Rate ----------------
+
+```{r}
+g1 <- feols(depDelay_rate ~ HHI | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+summary(g1)
+
+g2 <- feols(depDelay_rate ~ HHI + carrierRouteShare | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+summary(g2)
+
+b1 <- lm(depDelay_rate ~ HHI + carrierRouteShare, data = routeModel_df)
+summary(b1)
+vif(b1)
+
+g3 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*carrierHubShare_scaled| YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+
+summary(g3)
+vif(g3)
+
+b2 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*carrierHubShare_scaled, data = routeModel_df)
+summary(b2)
+vif(b2)
+vif(b2, type = 'predictor')
+
+# Adding Controls to explain within variations
+
+g4 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + sd_dep_time | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(sd_dep_time = sd_dep_time/60))
+
+summary(g4)
+
+
+b2 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + sd_dep_time, data = routeModel_df)
+summary(b2)
+vif(b2)
+vif(b2, type = "predictor")
+
+g5 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + peak_dep_share | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(peak_dep_Count = peak_dep_Count/1000))
+
+summary(g5)
+
+b5 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + peak_dep_share, data = routeModel_df)
+summary(b5)
+vif(b5)
+vif(b5, type = "predictor")
+
+etable(g1, g2, g3, g4, g5, tex = F, 
+       title = "Regression Results: Departure Delay Rate",
+       label = "tab:my_reg_results",
+       replace = TRUE)
+```
+
+# ----------------- Model 2: Departure Delay Rate ----------------
+
+```{r}
+m1 <- feols(arrDelay_rate ~ HHI | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+
+summary(m1)
+
+m2 <- feols(arrDelay_rate ~ HHI + carrierRouteShare | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+
+summary(m2)
+
+arr1 <- lm(arrDelay_rate ~ HHI + carrierRouteShare, data = routeModel_df)
+
+summary(arr1)
+
+vif(arr1)
+
+m3 <- feols(arrDelay_rate ~ HHI + HHI*hubShare_centered | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+
+summary(m3)
+
+arr2 <- lm(arrDelay_rate ~ HHI + hubShare_centered + HHI:hubShare_centered, data = routeModel_df)
+summary(arr2)
+vif(arr2, type = 'predictor')
+
+# -------- Add Controls --------
+m4 <- feols(arrDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + peak_dep_share | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(sd_dep_time = sd_dep_time/60))
+
+summary(m4)
+
+m5 <- feols(arrDelay_rate ~ HHI + carrierRouteShare + HHI* hubShare_centered + sd_dep_time | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+
+summary(m5)
+
+m6 <- feols(arrDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + sd_dep_time | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(sd_dep_time = sd_dep_time/60))
+
+summary(m6)
+
+arrF <- lm(arrDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + sd_dep_time, data = routeModel_df)
+summary(arrF)
+vif(arrF, type = 'predictor')
+
+etable(m1, m2, m3, m4, m6,
+       tex = F, 
+       title = "Regression Results: Arrival Delay Rate",
+       label = "tab:my_reg_results",
+       replace = TRUE)
+```
+
+# ----------------- Model 3: Cancellation Rate ----------------
+```{r Final Model 3}
+h1 <- feols(cancel_rate ~ HHI | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+
+summary(h1)
+
+h2 <- feols(cancel_rate ~ HHI + carrierRouteShare | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+summary(h2)
+
+h3 <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered| YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+summary(h3)
+
+h4 <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered + peak_dep_share | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+summary(h4)
+
+h5 <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered + sd_dep_time | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(sd_dep_time = sd_dep_time/60))
+
+
+etable(h1,h2, h3,h4,h5, tex = FALSE, 
+       title = "Regression Results: Cancellation Delay Rate",
+       label = "tab:my_reg_results",
+       replace = TRUE)
+```
+
+
+```{r}
+etable(g5, m5, h5, tex = TRUE)
+summary(routeModel_df$HHI)
+
+m5
+```
+
+```{r}
+plot_predictions(m2, condition = c("HHI"), vcov=FALSE)
+```
+
+
