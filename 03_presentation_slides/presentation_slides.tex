@@ -1,0 +1,379 @@
+\documentclass[t]{beamer}
+
+% --- Theme and Color Setup ---
+\usetheme{Madrid}
+
+% Define the custom Orange color
+\definecolor{MyOrange}{RGB}{230, 85, 10} 
+
+% Apply the orange color to the structure
+\usecolortheme[named=MyOrange]{structure}
+
+% Fix footer colors to match the orange theme
+\setbeamercolor{palette primary}{bg=MyOrange,fg=white}
+\setbeamercolor{palette secondary}{bg=MyOrange!80!black,fg=white}
+\setbeamercolor{palette tertiary}{bg=MyOrange!60!black,fg=white}
+\setbeamerfont{caption}{size=\footnotesize}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{tikz} 
+\usepackage{booktabs}
+\usepackage{natbib}
+
+% --- 1. CONFIGURATION FOR CONTENT SLIDES (Middle Pages) ---
+%\addtobeamertemplate{frametitle}{}{%
+    %\begin{tikzpicture}[remember picture,overlay]
+        %\node[anchor=north east, xshift=-0.3cm, yshift=0cm, inner sep=0pt] at (current page.north east) {
+            %\includegraphics[height=1cm, keepaspectratio]{logo_white.png}
+        %};
+    %\end{tikzpicture}%
+%}
+
+% --- 2. CONFIGURATION FOR FIRST & LAST PAGE ---
+\newcommand{\FirstLastPageLayout}{
+    \begin{tikzpicture}[remember picture,overlay]
+        \node[anchor=north east, xshift=-0.3cm, yshift=0cm, inner sep=0pt] at (current page.north east) {
+            \includegraphics[height=1cm, keepaspectratio]{logo.jpg}
+        };
+        \node[anchor=south west, xshift=0.5cm, yshift=0.5cm] at (current page.south west) {
+            \textcolor{MyOrange}{\footnotesize St. Olaf College}
+        };
+    \end{tikzpicture}
+}
+
+% --- Info ---
+\title[Economics 399]{Does airport dominance weaken quality competition on concentrated airline routes?} % 
+\subtitle{Evidence from delays and cancellations.} % 
+\author{Eugene Kiepeeh} % 
+\institute[]{St. Olaf College} % 
+\date{May 12, 2026}
+
+\begin{document}
+
+% --- Slide 1: Title Page ---
+\begin{frame}
+    \FirstLastPageLayout % 
+    \titlepage 
+\end{frame}
+
+% --- Slide 2: Contents ---
+\begin{frame}{Contents} % 
+    \begin{itemize}
+        \item Motivation % 
+        \item Research gap \& Aim of the paper % 
+        \item Theoretical background
+        \item Methodology
+        \item Results \& Discussion
+        \item Further research \& Limitations  
+    \end{itemize}
+\end{frame}
+
+% --- Motivation ---
+\begin{frame}{Motivation} % 
+    \begin{itemize}
+        \item \textbf{Benefits and Cost of Competition} –  Is competition always good and Can concentration be bad?%
+        \vspace{0.2cm}
+        
+        \item \textbf{Primary Question} - How does firm behavior shift when they become the dominant option?
+        \vspace{0.2cm}
+        \normalsize
+      
+
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Past Research Findings}
+    \begin{itemize}
+        \item \textbf{Diana, 2016} Dominance enables connectivity but introduces systemic delays (3.0--3.3 pp lower on-time rates).
+        \item \textbf{Calzada, 2023 } Dominant carriers may "internalize" congestion, scheduling conservatively to protect network integrity.
+        \item \textbf{Chen, 2013} Quality often declines following mergers that increase dominance and reduce pressure
+        \item \textbf{Ciliberto, 2010} Monopoly status can shift focus from satisfaction to cost minimization \cite{ciliberto2010}.
+        \item \textbf{Gans, 2017} Complaint volume is \textbf{twice as sensitive} to delays when an airline controls $>50\%$ of a market.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Research Gap}
+    \begin{itemize}
+        \item \textbf{On-time is the only metric that has been used in the past to assess service}
+            \begin{itemize}
+                \item This paper introduces more metrics that consumers care about: delay, arrival and cancellations.
+            \end{itemize}
+        \item \textbf{Limited studies (No study**) have been conducted on COVID and the post-COVID effect.}
+            \begin{itemize}
+                \item This paper presents the first multi year study on how market concentration impact service quality.
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Data and Variable Construction}
+    \begin{itemize}
+        \item \textbf{Sample Overview}
+        \begin{itemize}
+            \item \textbf{Source:} U.S. Domestic Flight Records (Jan 2020 -- Dec 2025).
+            \addlinespace
+            \item Aggregated 40,910,273 individual
+flight records across 8,734 domestic routes connecting 391 airports into \textbf{Carrier-Route-Month panel}.
+\addlinespace
+            \item \textbf{Unit of Observation:} The number of flights AA completed between ATL and LAX in January 2020, plus percentage of canceled, delays before departure, and late arrivals. ($N = 667,836$).
+            \addlinespace
+            \item \textbf{Scope:} Captures the full cycle of COVID-19 shock and recovery.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Methodology ---
+\begin{frame}{Methodology} % 
+
+    \begin{itemize}
+        \item \textbf{Dependent Variable ($Y$)}
+        \begin{itemize}
+            \item \textbf{Departure Delay Rate:} Proportion of monthly flights departing $\geq 15$ mins late.
+            \item \textbf{Arrival Delay Rate:} Proportion of monthly flights arriving later than $\geq 15$ mins.
+            \item \textbf{Cancellation Rate:} Proportion of monthly flights canceled.
+        \end{itemize}
+        \addlinespace
+        \item \textbf{Key Structural Predictors}
+        \begin{itemize}
+            \item \textbf{Market Concentration (HHI):} Sum of squared route market shares.
+            \item \textbf{Centered Hub Share:} Carrier share at origin, centered on monthly airport mean to mitigate structural multicollinearity.
+            \item \textbf{Schedule Dispersion ($sd\_dep\_time$):} Proxies for daily schedule volatility (scaled to 60-min units).
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Theoretical background ---
+\begin{frame}{Theoretical background} % 
+    \begin{itemize}
+        \item Model
+    \end{itemize}
+    \begin{equation}
+    Y_{irt} = \beta_1 HHI_{rt} + \beta_2 Share_{irt} + \gamma X_{irt} + \alpha_i + \delta_r + \tau_t + \epsilon_{irt}
+    \end{equation}
+    \begin{itemize}
+        \item where 
+        \begin{itemize}
+            \item $Y_{irt}$ represents the delay or cancellation rate for operating carrier $i$ on route $r$ in month-year $t$.
+            \item $HHI_{rt}$ represents route concentration
+            \item $Share_{irt}$ is the carrier's route market share
+            \item $X_{irt}$ represents a vector of operational controls.
+
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Summary Statistics} % 
+    \begin{itemize}
+    \begin{table}[h!]
+    \centering
+    \caption{Summary Statistics of the Full Sample ($N = 667,836$)}
+    \label{tab:summary_stats}
+    \small % Slightly smaller font for better fit
+    \resizebox{0.9\textwidth}{!}{% Adjusts table to fit the slide width
+    \begin{tabular}{lcccccc}
+    \toprule
+    \textbf{Variable} & \textbf{Mean} & \textbf{Std. Dev.} & \textbf{Min} & \textbf{Median} & \textbf{Max} \\
+    \midrule
+    \multicolumn{6}{l}{\text{Operational Performance (Dependent Variables)}} \\
+    Departure Delay Rate   & 0.188 & 0.148 & 0.000 & 0.161 & 1.000 \\
+    Arrival Delay Rate     & 0.192 & 0.148 & 0.000 & 0.167 & 1.000 \\
+    Cancellation Rate      & 0.026 & 0.086 & 0.000 & 0.000 & 1.000 \\
+    \addlinespace
+    \multicolumn{6}{l}{\text{Market Structure \& Controls}} \\
+    HHI (Concentration)    & 0.704 & 0.274 & 0.138 & 0.657 & 1.000 \\
+    Carrier Route Share    & 0.627 & 0.360 & 0.001 & 0.652 & 1.000 \\
+    Carrier Hub Share      & 0.278 & 0.256 & 0.000 & 0.202 & 1.000 \\
+    Total Route Flights    & 145.4 & 149.0 & 1.0   & 94.0  & 1319.0 \\
+    Delay Incidents        & 6.37  & 9.04  & 0     & 3.0   & 248.0 \\
+    \bottomrule
+    \end{tabular}
+    }
+    \item
+    \end{table}
+    \end{itemize}
+\end{frame}
+
+% --- Results \& Discussion ---
+\begin{frame}{Exploratory Data Analysis} % 
+    \begin{itemize}
+    \item \textbf{Skewness:} Both delay rates follow a right-skewed distribution, typical of aviation operations.   
+    \item \textbf{Cancellations:} Highly concentrated near 0\%, representing rare but high-impact events.
+    \end{itemize}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{fig5_var_distribution.pdf}
+        \caption{Distributions of Delay and Cancellation Rates across Route-Months.}
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}{Exploratory Data Analysis} % 
+    \begin{itemize}
+    \item \textbf{Finding:} On average, the typical route in the U.S. is highly concentrated with mean HHI of 0.7039 (7019). 
+    \end{itemize}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{fig4_hhi_distribution.pdf}
+        \caption{Routes with pure monopoly (HHI = 1) are not included because it distorts the plot}
+    \end{figure}
+
+
+\end{frame}
+
+\begin{frame}{Exploratory Data Analysis} % 
+    \begin{itemize}
+    \item \textbf{Finding:} On average, late arrivals fluctuate between 15 - 25\% across all 72-months. 
+    \end{itemize}
+    
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.9\textwidth]{fig1_macro_view.pdf}
+    \end{figure}
+
+
+\end{frame}
+
+\begin{frame}{Econometric Specification}
+    \begin{block}{Empirical Model: Fixed Effects OLS}
+        \footnotesize
+        \[ Delay_{icrt} = \beta_1 HHI_{rt} + \beta_2 Share_{icrt} + \beta_3 (HHI \times Hub)_{ict} + \beta_4 (HHI \times \ln Density)_{rt} + \dots \]
+        \[ \dots + \alpha_c + \gamma_r + \delta_t + \epsilon_{icrt} \]
+    \end{block}
+
+    \begin{itemize}
+        \item \textbf{Fixed Effects:}
+        \begin{itemize}
+            \item \textbf{Route ($\gamma_r$):} Controls for time-invariant geography and airport constraints.
+            \item \textbf{Carrier ($\alpha_c$):} Accounts for airline-specific operational culture.
+            \item \textbf{Year-Month ($\delta_t$):} Controls for macroeconomic and seasonal shocks.
+        \end{itemize}
+        \addlinespace
+        \item \textbf{Identification:} Relies on \textit{within-variation} of HHI on specific corridors across 72 monthly time-steps.
+        \item \textbf{Robustness:}
+        \begin{itemize}
+            \item \textbf{Clustering:} Standard errors clustered at the \textbf{Route level}.
+            \item \textbf{Weighting:} Weighted by \textit{carrier total flights} to reflect the average passenger experience.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Empirical Results: Operational Performance}
+    \begin{table}
+        \centering
+        \caption{Impact of Hub Dominance and Market Concentration}
+        \label{tab:results}
+        \resizebox{0.6\textwidth}{!}{%
+        \begin{tabular}{lccc}
+            \toprule
+            \textbf{Dependent Variables:} & \textbf{depDelay\_rate} & \textbf{arrDelay\_rate} & \textbf{cancel\_rate} \\
+            \textbf{Model:}               & (1)                     & (2)                     & (3) \\
+            \midrule
+            \textit{Variables} & & & \\
+            HHI                           & -0.0152$^{***}$         & 0.0143$^{***}$          & -0.0107$^{***}$ \\
+                                          & (0.0033)                & (0.0031)                & (0.0008) \\
+            \addlinespace
+            carrierRouteShare             & 0.0029                  & -0.0521$^{***}$         & 0.0159$^{***}$ \\
+                                          & (0.0030)                & (0.0026)                & (0.0007) \\
+            \addlinespace
+            hubShare\_centered            & 0.0919$^{***}$          & 0.0814$^{***}$          & -0.0027$^{*}$ \\
+                                          & (0.0075)                & (0.0068)                & (0.0017) \\
+            \addlinespace
+            peak\_dep\_Count              & -0.0856$^{***}$         &                         & -0.0849$^{***}$ \\
+                                          & (0.0116)                &                         & (0.0042) \\
+            \addlinespace
+            \textbf{HHI $\times$ HubShare} & \textbf{-0.0271$^{**}$} & \textbf{-0.0198$^{*}$}  & \textbf{0.0142$^{***}$} \\
+                                          & (0.0115)                & (0.0106)                & (0.0029) \\
+            \addlinespace
+            sd\_dep\_time                 &                         & 8.64$\times 10^{-5}$$^{***}$ & \\
+                                          &                         & (2.14$\times 10^{-6}$)  & \\
+            \midrule
+            \textit{Fixed-effects} & & & \\
+            YEAR\_MONTH, Carrier, Route   & Yes                     & Yes                     & Yes \\
+            \midrule
+            \textit{Fit statistics} & & & \\
+            Observations                  & 667,440                 & 655,816                 & 667,440 \\
+            R$^2$                         & 0.48415                 & 0.43813                 & 0.59120 \\
+            Within R$^2$                  & 0.01056                 & 0.02000                 & 0.00391 \\
+            \bottomrule
+            \multicolumn{4}{l}{\scriptsize Standard errors clustered by route; $^{***}$p<0.01, $^{**}$p<0.05, $^{*}$p<0.1}
+        \end{tabular}
+        }
+    \end{table}
+\end{frame}
+
+\begin{frame}{Analysis}
+    \small
+    \textbf{Part I: Key Variable Interpretations}
+    \begin{itemize}
+        \item \textbf{The Hub Penalty:} Airport dominance ($HubShare$) is the strongest predictor of delays. A 10\% increase in hub share increases baseline departure delays by \textbf{0.97 percentage points}.
+        \item \textbf{Operational Efficiency:} Higher route share is a associated with lower arrival delays ($\beta = -0.052$).
+        \item \textbf{(Interaction):} Airlines with large shares of departing flights on a highly concentrated routes are expected to reduced their delay by  0.0271 percentage point. 
+        \begin{itemize}
+            \item The same cannot be said for Cancellation rate! Higher route share shows an expected increase in delays by the dominant carrier.
+        \end{itemize}
+        
+        
+    \end{itemize}
+
+    \hrule
+    \vspace{0.2cm}
+
+\end{frame}
+
+
+\begin{frame}{Conclusion}
+     \begin{figure}
+        \centering
+        \includegraphics[width=0.7\textwidth]{fig2_core_mechanism.pdf}
+        \caption{Dominant Carrier are likely to complete their flights on time versus smaller airlines.}
+    \end{figure}
+\end{frame}
+\begin{frame}{Conclusion}
+
+    \textbf{Does airport dominance weaken quality competition?}
+    \vspace{0.1cm}
+    \textbf{\color{red} Answer: Not Exactly Yes!}
+    \begin{itemize}
+        \item \textbf{Delays (Efficiency):} Dominance \textit{improves} reliability in concentrated markets. Dominant hub carriers "internalize" congestion, coordinating schedules better when competition is low to avoid self-congestion.
+        \item \textbf{Cancellations (Strategic):} \textbf{Yes.} The positive interaction ($\beta = 0.0142$) for cancellations suggests that in concentrated markets, dominant carriers are \textit{more likely} to cancel flights, potentially exploiting market power when passengers have fewer alternatives.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Study Limitations}
+    \begin{itemize}
+        \item \textbf{Exogenous Shocks \& Structural Breaks}
+        \begin{itemize}
+            \item The 2020--2025 period contains extreme volatility (COVID-19 lockdowns and the 2022 recovery "meltdown").
+            \item While fixed effects control for time, the structural relationship between HHI and delays may be fundamentally different during crisis vs. steady-state periods.
+        \end{itemize}
+        \addlinespace
+        \item \textbf{Unobserved Environmental Variables}
+        \begin{itemize}
+            \item \textbf{Weather:} Lack of localized METAR data. Delays attributed to concentration may be exacerbated by localized weather patterns not fully captured by route fixed effects.
+            \item \textbf{Air Traffic Control (ATC):} FAA staffing shortages during 2023--2024 acted as a system-wide supply constraint.
+        \end{itemize}
+        \addlinespace
+        \item \textbf{Endogeneity of Market Structure}
+        \begin{itemize}
+            \item Airlines may exit routes \textit{because} they are prone to delays, meaning HHI could be endogenous to operational performance.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% --- Further research \& Limitations ---
+\begin{frame}{Further research \& Limitations} % 
+    \begin{itemize}
+        \item There is very little month to month changes in HHI as result, it explains a small percentage of change in month variances
+        \item Mishandled Baggage and Over-sales are metric that I would like to consider this summer.
+        \item More comparative studies should compare the quality of service between the dominant carrier and the fringe carrier.
+    \end{itemize}
+\end{frame}
+
+
+\end{document}
