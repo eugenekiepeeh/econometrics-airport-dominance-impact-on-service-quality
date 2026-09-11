@@ -1,0 +1,5 @@
+Market Concentration,Unique Routes,Mean Delay Rate,Mean Cancel Rate,Mean Carrier Route Share
+Highly Competitive (< 0.15),    4,20.46%,1.47%,10.24%
+Moderately Concentrated (0.15 - 0.24),  138,18.17%,1.61%,16.84%
+Highly Concentrated (0.25 - 0.99),"3,933",19.06%,2.50%,38.88%
+Pure Monopoly (= 1.0),"8,035",18.37%,2.91%,100.00%

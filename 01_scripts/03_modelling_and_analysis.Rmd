@@ -26,7 +26,7 @@ routeModel_df <- read_csv("00_data/processed/model_data.csv")
 # Centering Variables
 
 ```{r}
-routeModel_df <- routeModel_df |>
+routeModel_df_02 <- routeModel_df |>
   group_by(YEAR, MONTH, route_id) |>
   mutate(carrierrouteshare_scaled= as.numeric(scale(carrierRouteShare))) |>
   ungroup() |>
@@ -35,19 +35,47 @@ routeModel_df <- routeModel_df |>
   ungroup()
 ```
 
+```{r}
+routeModel_df_02 |> select(carrierrouteshare_scaled, carrierHubShare_scaled) |>
+summary()
+```
+-- By this means of scaling, we lose a lot of observations, I will thereby be centering using the mean.
+
+```{r}
+routeModel_df <- routeModel_df |>
+  group_by(YEAR, MONTH, ORIGIN) %>%
+  mutate(
+    mean_hub_share = mean(carrierHubShare, na.rm = TRUE)) %>%
+  ungroup()  %>%
+  mutate(
+    hubShare_centered = carrierHubShare - mean_hub_share,
+    hubShare_z = (carrierHubShare - mean_hub_share) / sd(carrierHubShare, na.rm = TRUE))
+```
+
+What this now means
+- Positive Hub share_centered, the carrier has a higher share of the departing flights at this airport this month compare the average share of all airlines.
+
+- Negative Hub Share_centered: the carrier has a lower share of the departing flights relative to the mean.
+
+```{r}
+routeModel_df |> select(HHI, carrierHubShare) |> 
+  summary()
+routeModel_df |> select(HHI, carrierHubShare, carrierRouteShare) |> cor()
+```
+
 
 ```{r}
 #Checking for Reverse-Causality
 
 grangertest(routeModel_df$depDelay_rate, routeModel_df$HHI, order = 3)
-
-str(routeModel_df)
 ```
 
 
 # ----------------- Model 1: Departure Delay Rate ----------------
 
 ```{r}
+# g_{1-6} are fixed effects models while 'b_{1-6}' are baseline model which are use to check multicolinearity given vif can't process fixed effect objects.
+
 g1 <- feols(depDelay_rate ~ HHI | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
 summary(g1)
 
@@ -58,12 +86,13 @@ b1 <- lm(depDelay_rate ~ HHI + carrierRouteShare, data = routeModel_df)
 summary(b1)
 vif(b1)
 
-g3 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*carrierHubShare_scaled| YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+g3 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered| YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
 
 summary(g3)
-vif(g3)
+vcov(g3)
+collinearity(g3)
 
-b2 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*carrierHubShare_scaled, data = routeModel_df)
+b2 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered, data = routeModel_df)
 summary(b2)
 vif(b2)
 vif(b2, type = 'predictor')
@@ -73,7 +102,7 @@ vif(b2, type = 'predictor')
 g4 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + sd_dep_time | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(sd_dep_time = sd_dep_time/60))
 
 summary(g4)
-
+collinearity(g4)
 
 b2 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + sd_dep_time, data = routeModel_df)
 summary(b2)
@@ -83,6 +112,7 @@ vif(b2, type = "predictor")
 g5 <- feols(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + peak_dep_share | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(peak_dep_Count = peak_dep_Count/1000))
 
 summary(g5)
+collinearity(g5)
 
 b5 <- lm(depDelay_rate ~ HHI + carrierRouteShare + HHI*hubShare_centered + peak_dep_share, data = routeModel_df)
 summary(b5)
@@ -107,9 +137,7 @@ m2 <- feols(arrDelay_rate ~ HHI + carrierRouteShare | YEAR_MONTH_id + Carrier + 
 summary(m2)
 
 arr1 <- lm(arrDelay_rate ~ HHI + carrierRouteShare, data = routeModel_df)
-
 summary(arr1)
-
 vif(arr1)
 
 m3 <- feols(arrDelay_rate ~ HHI + HHI*hubShare_centered | YEAR_MONTH_id + Carrier + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
@@ -153,14 +181,17 @@ summary(h1)
 h2 <- feols(cancel_rate ~ HHI + carrierRouteShare | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
 summary(h2)
 
-h3 <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered| YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+h3 <- feols(cancel_rate ~ HHI + carrierRouteShare + HHI:hubShare_centered| YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
 summary(h3)
+
+h3b <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered| YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
+summary(h3b)
 
 h4 <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered + peak_dep_share | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df)
 summary(h4)
 
 h5 <- feols(cancel_rate ~ HHI + carrierRouteShare + hubShare_centered + sd_dep_time | YEAR_MONTH_id + Carrier + + route_id, weights = ~carrierTotalFlights, cluster = ~ route_id, data = routeModel_df |> mutate(sd_dep_time = sd_dep_time/60))
-
+summary(h5)
 
 etable(h1,h2, h3,h4,h5, tex = FALSE, 
        title = "Regression Results: Cancellation Delay Rate",

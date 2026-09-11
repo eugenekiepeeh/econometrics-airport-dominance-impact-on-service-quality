@@ -22,6 +22,8 @@ airline_route_level_df <- read_csv("00_data/processed/airline_route_level_data.c
 
 HHI is calculated as an airline total number of trips completed/assigned on a route out of the total number of trips made by all airlines on that route.
 
+`n_carrier` calculates the number of carriers/airlines on a route in month.
+
 ```{r Calculate HHI}
 hhi_final <- airline_route_level_df |>
   group_by(YEAR, MONTH, ORIGIN, DEST) |>
