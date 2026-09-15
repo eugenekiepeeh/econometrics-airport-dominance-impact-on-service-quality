@@ -429,7 +429,7 @@ print(final_plot)
 
 # save plots
 
-```{r}
+```{r, include=FALSE}
 # Save Figures
 ggsave("../04_output/figures/fig1_macro_view.pdf", plot = fig1, width = 8, height = 5, units = "in")
 
